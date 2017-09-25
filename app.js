@@ -64,6 +64,20 @@ var budgetController = (function() {
       return newItem;
     },
     
+    deleteItem: function(type, id) {
+        var ids, index;
+
+        ids = data.allItems[type].map(function(current) {
+            return current.id;
+        });
+
+        index = ids.indexOf(id);
+        if (index !== -1) {
+            data.allItems[type].splice(index, 1);
+        }
+            
+    },
+    
     calculateBudget: function() {
       // Calculate total income & expenses
       calculateTotal('exp');
@@ -155,10 +169,8 @@ var UIController = (function() {
       document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
       document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
       
-      if (obj.percentage > 0) {
-        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
-      } else {
-        document.querySelector(DOMstrings.percentageLabel).textContent = '---';
+      if (obj.percentage > 0) {        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+      } else {        document.querySelector(DOMstrings.percentageLabel).textContent = '---';
       }
     },
     
@@ -188,8 +200,7 @@ var controller = (function(budgetCtrl, UICtrl) {
       // 1. Calculate the budget
       budgetCtrl.calculateBudget();
       // 2. Return the budget
-      var budget = budgetCtrl.getBudget();
-      
+      var budget = budgetCtrl.getBudget();      
       // 3. Display the budget on the UI
       UICtrl.displayBudget(budget);
     };
@@ -197,7 +208,7 @@ var controller = (function(budgetCtrl, UICtrl) {
     var ctrlAddItem = function() {
       var input, newItem;
       // 1. Get the field input data
-      input = UIController.getInput();
+      input = UICtrl.getInput();
       
       if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
         // 2. Add the item to the budget controller
@@ -211,16 +222,20 @@ var controller = (function(budgetCtrl, UICtrl) {
       }
     };
   
-  var ctrlDeleteItem = function(event) {
-    var itemID, splitID. type, ID;
-    
-    itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
-    if(itemID) {
-      splitID = itemID.split('-');
-      type = splitID[0];
-      ID = split[1];
-    }
-  };
+    var ctrlDeleteItem = function(event) {
+        var itemID, splitID, type, ID;
+        
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        
+        if (itemID) {
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = parseInt(splitID[1]);
+            
+            // 1. delete the item from the data structure
+            budgetCtrl.deleteItem(type, ID);
+      }
+    };
   
   return {
     init: function() {

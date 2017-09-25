@@ -138,7 +138,7 @@ var UIController = (function() {
       // Create HTML strings with placeholder text
       if (type === 'inc'){
         element = DOMstrings.incomeContainer;
-        html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+        html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       } else if (type === 'exp'){
         element = DOMstrings.expensesContainer;
         html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
@@ -149,6 +149,11 @@ var UIController = (function() {
       newHtml = newHtml.replace('%value%', obj.value);
       // Insert the HTML into the DOM
       document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+    },
+    
+    deleteListItem: function(selectorID) {
+      var el  = document.getElementById(selectorID);
+      el.parentNode.removeChild(el);      
     },
     
     clearFields: function() {
@@ -169,8 +174,10 @@ var UIController = (function() {
       document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
       document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
       
-      if (obj.percentage > 0) {        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
-      } else {        document.querySelector(DOMstrings.percentageLabel).textContent = '---';
+      if (obj.percentage > 0) {       
+        document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+      } else {        
+        document.querySelector(DOMstrings.percentageLabel).textContent = '---';
       }
     },
     
@@ -234,6 +241,10 @@ var controller = (function(budgetCtrl, UICtrl) {
             
             // 1. delete the item from the data structure
             budgetCtrl.deleteItem(type, ID);
+            // 2. Delete the item from the UI
+            UICtrl.deleteListItem(itemID);
+            // 3. Update the IU
+            updateBudget();
       }
     };
   
